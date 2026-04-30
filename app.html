@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workspace — ResearchFlow</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  
+  <!-- marked.js for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Reusing your global variables -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/cookie.css" /> <!-- Add this line -->
+
+  <style>
+    /* ── App Layout ── */
+    body {
+      margin: 0;
+      background-color: var(--color-white);
+      display: flex;
+      height: 100vh;
+      overflow: hidden; /* Prevent body scroll, handle scroll in main */
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 260px;
+      background-color: var(--color-cream);
+      border-right: 1px solid rgba(201,170,150,0.4);
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .sidebar__logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--color-espresso);
+      text-decoration: none;
+      margin-bottom: 2rem;
+    }
+
+    .sidebar__new-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      background: var(--color-espresso);
+      color: var(--color-cream);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+      margin-bottom: 2rem;
+    }
+
+    .sidebar__new-btn:hover {
+      background: var(--color-brown);
+    }
+
+    .sidebar__section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--color-dusty);
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar__history {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Placeholder for future history items */
+    .history-item {
+      font-size: 0.85rem;
+      color: var(--color-brown);
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .history-item:hover {
+      background: rgba(139,99,85,0.1);
+    }
+
+    .sidebar__footer {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(201,170,150,0.3);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 0.6rem;
+      background: transparent;
+      border: 1px solid var(--color-dusty);
+      color: var(--color-espresso);
+      border-radius: var(--radius-pill);
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* ── Main Workspace ── */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+
+    /* ── Search Container (Transitions from center to top) ── */
+    .search-wrapper {
+      width: 100%;
+      max-width: 800px;
+      margin-top: 25vh; /* Starts vertically centered */
+      transition: margin-top 0.5s ease;
+    }
+
+    .search-wrapper.active {
+      margin-top: 0; /* Moves to top when searching */
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: var(--color-white);
+      border: 1.5px solid var(--color-dusty);
+      border-radius: var(--radius-lg);
+      padding: 0.75rem 1rem;
+      box-shadow: 0 4px 20px rgba(44,31,26,0.08);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-bar:focus-within {
+      border-color: var(--color-brown);
+      box-shadow: 0 0 0 3px rgba(139,99,85,0.12), 0 4px 20px rgba(44,31,26,0.08);
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      font-family: var(--font-body);
+      color: var(--color-espresso);
+      background: transparent;
+      margin-left: 0.5rem;
+    }
+
+    .search-submit {
+      background: var(--color-brown);
+      color: var(--color-cream);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* ── Claude-Style Loading State ── */
+    .status-container {
+      display: none;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--color-cream);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(201,170,150,0.3);
+    }
+
+    .status-container.active {
+      display: block;
+    }
+
+    .status-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+      color: var(--color-dusty);
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+
+    .status-step.current {
+      color: var(--color-espresso);
+      font-weight: 500;
+    }
+
+    .status-step.done {
+      color: #6db36d;
+    }
+
+    /* Spinner for current step */
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid transparent;
+      border-top-color: var(--color-espresso);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      opacity: 0;
+    }
+
+    .status-step.current .spinner { opacity: 1; }
+    .status-step.done .spinner { display: none; }
+
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    /* ── Results Container ── */
+    .results-container {
+      display: none;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 2rem;
+      padding-bottom: 4rem;
+    }
+
+    .results-container.active {
+      display: block;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+<aside class="sidebar">
+    <a href="index.html" class="sidebar__logo">ResearchFlow</a>
+    <!-- Explicit Back to Home Link -->
+    <a href="index.html" style="display:flex; align-items:center; gap:0.4rem; color:var(--color-brown); text-decoration:none; font-size:0.85rem; font-weight:500; margin-top:-1rem; margin-bottom:2rem; transition:color 0.2s;" onmouseover="this.style.color='var(--color-espresso)'" onmouseout="this.style.color='var(--color-brown)'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Home
+    </a>
+    
+    <button class="sidebar__new-btn" id="new-search-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      New Research
+    </button>
+
+    <span class="sidebar__section-title">Recent</span>
+    <div class="sidebar__history">
+      <div class="history-item" id="history-login-btn">Sign in to save history</div>
+    </div>
+
+    <div class="sidebar__footer">
+      <button class="login-btn">Log In / Sign Up</button>
+    </div>
+  </aside>
+
+  <!-- Main Workspace -->
+  <main class="workspace">
+    
+    <div class="search-wrapper" id="search-wrapper">
+      <div class="search-bar">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--color-dusty)" stroke-width="1.8"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M13 13L17 17"/></svg>
+        <input type="text" class="search-input" id="search-input" placeholder="Ask a complex research question..." autocomplete="off" />
+        <button class="search-submit" id="search-submit">Research</button>
+      </div>
+    </div>
+
+    <!-- Thinking State -->
+    <div class="status-container" id="status-container">
+      <div class="status-step" id="step-1">
+        <div class="spinner"></div>
+        <span class="step-text">Deconstructing query...</span>
+      </div>
+      <div class="status-step" id="step-2">
+        <div class="spinner"></div>
+        <span class="step-text">Querying Semantic Scholar, arXiv, PubMed...</span>
+      </div>
+      <div class="status-step" id="step-3">
+        <div class="spinner"></div>
+        <span class="step-text">Reading and filtering relevant papers...</span>
+      </div>
+      <div class="status-step" id="step-4">
+        <div class="spinner"></div>
+        <span class="step-text">Synthesizing final academic report...</span>
+      </div>
+    </div>
+
+    <!-- Results Area -->
+    <div class="results-container markdown-body" id="results-content"></div>
+
+    <!-- ═══════════════════════════════════════
+       FORTUNE COOKIE
+  ═══════════════════════════════════════ -->
+  <div class="cookie-widget" id="cookie-widget">
+    <span class="cookie-widget__label">Need a break?</span>
+    <div class="cookie-widget__area" id="cookie-area" role="button" tabindex="0" aria-label="Click for a fortune">
+      <div class="cookie-widget__whole" id="cookie-whole">
+        <img src="assets/cookie.svg" alt="Fortune cookie" width="72" height="72" />
+      </div>
+      <div class="cookie-widget__halves" id="cookie-halves">
+        <div class="cookie-widget__half cookie-widget__half--left" id="cookie-left">
+          <img src="assets/cookie-left.svg" alt="" width="40" height="72" />
+        </div>
+        <div class="cookie-widget__half cookie-widget__half--right" id="cookie-right">
+          <img src="assets/cookie-right.svg" alt="" width="40" height="72" />
+        </div>
+      </div>
+      <div class="cookie-widget__fortune" id="cookie-fortune">
+        <p class="cookie-widget__fortune-text" id="fortune-text"></p>
+        <span class="cookie-widget__fortune-sep"></span>
+      </div>
+    </div>
+    <span class="cookie-widget__reset-hint">click to reset</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       AUTH MODAL
+  ═══════════════════════════════════════ -->
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-modal">
+      <button class="auth-close" id="auth-close" aria-label="Close modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      
+      <div class="auth-header">
+        <h2 class="auth-title" id="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle" id="auth-subtitle">Log in to save your research history.</p>
+      </div>
+
+      <form class="auth-form" id="auth-form">
+        <div class="auth-field">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="researcher@university.edu" required />
+        </div>
+
+        <div class="auth-field" style="position:relative;">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required style="padding-right:2.5rem;" />
+          <button type="button" id="toggle-pw" onclick="
+          const p = document.getElementById('password');
+          const isHidden = p.type === 'password';
+          p.type = isHidden ? 'text' : 'password';
+          this.innerHTML = isHidden
+            ? '<svg width=16 height=16 viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=2><path d=\'M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94\'/><path d=\'M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19\'/><line x1=1 y1=1 x2=23 y2=23/></svg>'
+            : '<svg width=16 height=16 viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=2><path d=\'M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z\'/><circle cx=12 cy=12 r=3/></svg>';
+          " style="
+              position:absolute;
+              right:0.75rem;
+              bottom:0.55rem;
+              background:none;
+              border:none;
+              cursor:pointer;
+              color:var(--color-dusty);
+              padding:0;
+              display:flex;
+              align-items:center;
+          ">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        <button type="submit" class="auth-submit" id="auth-submit-btn">Log In</button>
+      </form>
+
+      <div class="auth-footer">
+        <span id="auth-toggle-text">Don't have an account?</span> 
+        <button class="auth-toggle-btn" id="auth-toggle-btn">Sign up</button>
+      </div>
+    </div>
+  </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/cookie.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</body>
+</html>

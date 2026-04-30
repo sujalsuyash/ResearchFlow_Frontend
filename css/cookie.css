@@ -1,0 +1,284 @@
+/* ═══════════════════════════════════════════
+   cookie.css — Fortune Cookie widget
+═══════════════════════════════════════════ */
+
+/* ── Fixed container ─────────────────────── */
+.cookie-widget {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  user-select: none;
+}
+
+/* ── "Need a break?" label ───────────────── */
+.cookie-widget__label {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--color-dusty);
+  letter-spacing: 0.06em;
+  text-align: center;
+  white-space: nowrap;
+  transition: opacity var(--transition-med);
+}
+
+/* ── Clickable cookie area ───────────────── */
+.cookie-widget__area {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Whole cookie ────────────────────────── */
+.cookie-widget__whole {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--transition-med);
+}
+
+.cookie-widget__whole img,
+.cookie-widget__whole svg {
+  width: 72px;
+  height: 72px;
+}
+
+/* Float animation — whole cookie */
+@media (prefers-reduced-motion: no-preference) {
+  .cookie-widget__whole {
+    animation: cookie-float 3s ease-in-out infinite;
+  }
+}
+
+@keyframes cookie-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* Wiggle on hover */
+@media (prefers-reduced-motion: no-preference) {
+  .cookie-widget__area:hover .cookie-widget__whole {
+    animation: cookie-wiggle 0.4s ease, cookie-float 3s ease-in-out infinite 0.4s;
+  }
+}
+
+@keyframes cookie-wiggle {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-8deg); }
+  40%  { transform: rotate(8deg); }
+  60%  { transform: rotate(-5deg); }
+  80%  { transform: rotate(4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* ── Cracked halves (hidden by default) ─── */
+.cookie-widget__halves {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.cookie-widget__half {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+  opacity 0.3s ease;
+}
+
+.cookie-widget__half img,
+.cookie-widget__half svg {
+  width: 72px;
+  height: 72px;
+}
+
+.cookie-widget__half--left {
+  transform-origin: right center;
+  right: calc(50% + 0px);
+}
+
+.cookie-widget__half--right {
+  transform-origin: left center;
+  left: calc(50% + 0px);
+}
+
+/* ── Cracked state ───────────────────────── */
+.cookie-widget.cracked .cookie-widget__whole {
+  opacity: 0;
+  animation: none !important;
+  pointer-events: none;
+}
+
+.cookie-widget.cracked .cookie-widget__halves {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cookie-widget.cracked .cookie-widget__half--left {
+    transform: translateX(-24px) rotate(-30deg);
+  }
+
+  .cookie-widget.cracked .cookie-widget__half--right {
+    transform: translateX(2px) rotate(30deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-widget.cracked .cookie-widget__half--left {
+    transform: translateX(-20px);
+  }
+
+  .cookie-widget.cracked .cookie-widget__half--right {
+    transform: translateX(0px);
+  }
+}
+
+/* ── Fortune scroll ──────────────────────── */
+.cookie-widget__fortune {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  /* Desktop Fix: Anchor right so it expands left */
+  right: -10px;
+  left: auto;
+  transform: translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+  width: 240px;
+  background: var(--color-white);
+  border: 1px solid var(--color-dusty);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  box-shadow: 0 8px 32px rgba(44, 31, 26, 0.16);
+  transition: opacity 0.35s ease 0.2s, transform 0.35s ease 0.2s;
+  text-align: center;
+}
+
+/* Tail arrow pointing down */
+.cookie-widget__fortune::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  /* Desktop Fix: Align tail with cookie center */
+  right: 44px;
+  left: auto;
+  transform: rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: var(--color-white);
+  border-right: 1px solid var(--color-dusty);
+  border-bottom: 1px solid var(--color-dusty);
+}
+
+.cookie-widget.cracked .cookie-widget__fortune {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.cookie-widget__fortune-text {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 0.85rem;
+  font-style: normal; 
+  font-weight: 400; 
+  color: var(--color-espresso);
+  line-height: 1.5;
+}
+
+.cookie-widget__fortune-sep {
+  display: block;
+  width: 30px;
+  height: 1px;
+  background: var(--color-dusty);
+  margin: 0.5rem auto 0;
+}
+
+/* ── Reset hint ──────────────────────────── */
+.cookie-widget__reset-hint {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--color-dusty);
+  text-align: center;
+  margin-top: 0.25rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-med);
+  white-space: nowrap;
+}
+
+.cookie-widget.cracked .cookie-widget__reset-hint {
+  opacity: 1;
+}
+
+/* ── Mobile adjustments ──────────────────── */
+@media (max-width: 768px) {
+  .cookie-widget {
+    right: 10px;
+  }
+
+  /* Hide label on mobile */
+  .cookie-widget__label {
+    display: none;
+  }
+
+  .cookie-widget__area {
+    width: 60px;
+    height: 60px;
+  }
+
+  .cookie-widget__whole img,
+  .cookie-widget__whole svg {
+    width: 54px;
+    height: 54px;
+  }
+
+  .cookie-widget__half {
+    width: 30px;
+    height: 54px;
+  }
+
+  .cookie-widget__half img,
+  .cookie-widget__half svg {
+    width: 30px;
+    height: 54px;
+  }
+
+  .cookie-widget__fortune {
+    width: 200px;
+    right: -5px;
+  }
+
+  .cookie-widget__fortune::after {
+    right: 30px;
+  }
+
+  .cookie-widget__reset-hint {
+    display: none;
+  }
+}
+
+/* ── Very small screens ──────────────────── */
+@media (max-width: 360px) {
+  .cookie-widget {
+    right: 6px;
+  }
+}

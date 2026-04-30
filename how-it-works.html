@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="How ResearchFlow works — From your question to a full cited research report in minutes, powered by 4 academic APIs." />
+  <meta name="theme-color" content="#EDE8DC" />
+  <title>How It Works — ResearchFlow</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/pipeline.css" />
+  <link rel="stylesheet" href="css/cookie.css" />
+  <link rel="stylesheet" href="css/footer.css" />
+
+  <style>
+    /* ── Page-level overrides ── */
+    .hiw-hero {
+      padding: calc(var(--navbar-h) + 4rem) 2rem 4rem;
+      background: var(--color-cream);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hiw-hero__radial {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse 70% 55% at 50% 30%, rgba(201,170,150,0.18) 0%, transparent 70%);
+      z-index: 0;
+    }
+
+    .hiw-hero__inner {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .hiw-hero__eyebrow {
+      display: inline-block;
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-brown);
+    }
+
+    .hiw-hero__heading {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 700;
+      color: var(--color-espresso);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .hiw-hero__heading em {
+      font-style: italic;
+      color: var(--color-brown);
+    }
+
+    .hiw-hero__sub {
+      font-size: 1.05rem;
+      color: var(--color-brown);
+      line-height: 1.7;
+      max-width: 54ch;
+      margin: 0 auto;
+    }
+
+    .hiw-hero__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.8rem;
+      background: var(--color-espresso);
+      color: var(--color-cream);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 500;
+      border-radius: var(--radius-pill);
+      margin-top: 0.5rem;
+      transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+      box-shadow: 0 4px 20px rgba(44,31,26,0.2);
+    }
+
+    .hiw-hero__cta:hover {
+      background: var(--color-brown);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(44,31,26,0.26);
+    }
+
+    .hiw-hero__cta svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* ── Deep-dive cards section ── */
+    .hiw-deep {
+      padding: 5rem 2rem;
+      background: var(--color-white);
+    }
+
+    .hiw-deep__inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4rem;
+    }
+
+    .hiw-deep__step {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .hiw-deep__step:nth-child(even) .hiw-deep__step-visual {
+      order: -1;
+    }
+
+    .hiw-deep__step-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .hiw-deep__step-num {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--color-dusty);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .hiw-deep__step-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      font-weight: 600;
+      color: var(--color-espresso);
+      line-height: 1.2;
+    }
+
+    .hiw-deep__step-title em {
+      font-style: italic;
+      color: var(--color-brown);
+    }
+
+    .hiw-deep__step-body {
+      font-size: 0.97rem;
+      color: var(--color-brown);
+      line-height: 1.8;
+    }
+
+    .hiw-deep__step-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.4rem;
+    }
+
+    .hiw-deep__tag {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--color-cream);
+      border: 1px solid var(--color-dusty);
+      border-radius: var(--radius-pill);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--color-brown);
+    }
+
+    .hiw-deep__step-visual {
+      background: var(--color-cream);
+      border: 1px solid rgba(201,170,150,0.4);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* Mini pipeline diagram inside visual */
+    .hiw-deep__visual-label {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-dusty);
+    }
+
+    .hiw-deep__visual-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.7rem 1rem;
+      background: var(--color-white);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(201,170,150,0.3);
+    }
+
+    .hiw-deep__visual-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .hiw-deep__visual-dot--green  { background: #6db36d; }
+    .hiw-deep__visual-dot--amber  { background: #d4a843; }
+    .hiw-deep__visual-dot--blue   { background: #7ba7c9; }
+    .hiw-deep__visual-dot--brown  { background: var(--color-brown); }
+
+    .hiw-deep__visual-text {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      color: var(--color-espresso);
+    }
+
+    .hiw-deep__visual-sub {
+      font-size: 0.75rem;
+      color: var(--color-dusty);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .hiw-deep__divider {
+      width: 40px;
+      height: 2px;
+      background: var(--color-dusty);
+      border-radius: 2px;
+      margin: 0 auto;
+      opacity: 0.5;
+    }
+
+    /* ── FAQ section ── */
+    .hiw-faq {
+      padding: 5rem 2rem;
+      background: var(--color-cream);
+    }
+
+    .hiw-faq__inner {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .hiw-faq__header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .hiw-faq__eyebrow {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-brown);
+      display: block;
+      margin-bottom: 0.8rem;
+    }
+
+    .hiw-faq__title {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 3vw, 2.4rem);
+      font-weight: 600;
+      color: var(--color-espresso);
+    }
+
+    .hiw-faq__list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid rgba(201,170,150,0.4);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .hiw-faq__item {
+      border-bottom: 1px solid rgba(201,170,150,0.3);
+      background: var(--color-white);
+    }
+
+    .hiw-faq__item:last-child {
+      border-bottom: none;
+    }
+
+    .hiw-faq__question {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 1.5rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--color-espresso);
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-align: left;
+      gap: 1rem;
+      transition: background var(--transition-fast);
+    }
+
+    .hiw-faq__question:hover {
+      background: var(--color-cream);
+    }
+
+    .hiw-faq__icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      color: var(--color-brown);
+      transition: transform var(--transition-med);
+    }
+
+    .hiw-faq__item.open .hiw-faq__icon {
+      transform: rotate(45deg);
+    }
+
+    .hiw-faq__answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+    }
+
+    .hiw-faq__item.open .hiw-faq__answer {
+      max-height: 300px;
+    }
+
+    .hiw-faq__answer-inner {
+      padding: 0 1.5rem 1.4rem;
+      font-size: 0.9rem;
+      color: var(--color-brown);
+      line-height: 1.75;
+    }
+
+    /* ── CTA strip ── */
+    .hiw-cta {
+      padding: 4rem 2rem;
+      background: var(--color-espresso);
+      text-align: center;
+    }
+
+    .hiw-cta__inner {
+      max-width: 560px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.4rem;
+    }
+
+    .hiw-cta__heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 600;
+      color: var(--color-cream);
+      line-height: 1.25;
+    }
+
+    .hiw-cta__heading em {
+      font-style: italic;
+      color: var(--color-dusty);
+    }
+
+    .hiw-cta__body {
+      font-size: 0.95rem;
+      color: var(--color-dusty);
+      line-height: 1.7;
+    }
+
+    .hiw-cta__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 2rem;
+      background: var(--color-cream);
+      color: var(--color-espresso);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-pill);
+      transition: background var(--transition-fast), transform var(--transition-fast);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .hiw-cta__btn:hover {
+      background: var(--color-white);
+      transform: translateY(-2px);
+    }
+
+    .hiw-cta__btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .hiw-deep__step {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .hiw-deep__step:nth-child(even) .hiw-deep__step-visual {
+        order: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hiw-hero {
+        padding: calc(var(--navbar-h) + 2.5rem) 1.2rem 3rem;
+      }
+
+      .hiw-deep {
+        padding: 3.5rem 1.2rem;
+      }
+
+      .hiw-faq {
+        padding: 3.5rem 1.2rem;
+      }
+
+      .hiw-faq__question {
+        padding: 1rem 1.2rem;
+        font-size: 0.9rem;
+      }
+
+      .hiw-faq__answer-inner {
+        padding: 0 1.2rem 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       NAVBAR
+  ═══════════════════════════════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__logo">ResearchFlow</a>
+
+      <ul class="navbar__links">
+        <li><a href="index.html#about" class="navbar__link">About</a></li>
+        <li><a href="index.html" class="navbar__link navbar__link--back">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:4px;">
+            <path d="M16 10H4M4 10L10 4M4 10L10 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>Home</a></li>
+        <li><a href="index.html#hero-search" class="navbar__cta">Try it</a></li>
+      </ul>
+
+      <button class="navbar__hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <div class="navbar__mobile" id="mobile-menu">
+      <a href="index.html#about" class="navbar__mobile-link">About</a>
+      <a href="index.html" class="navbar__mobile-link">← Home</a>
+      <a href="index.html#hero-search" class="navbar__mobile-cta">Try it</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       PAGE HERO
+  ═══════════════════════════════════════ -->
+  <section class="hiw-hero">
+    <div class="hiw-hero__radial"></div>
+    <div class="hiw-hero__inner">
+      <span class="hiw-hero__eyebrow">Under the Hood</span>
+      <h1 class="hiw-hero__heading">
+        From question to report,<br /><em>automatically.</em>
+      </h1>
+      <p class="hiw-hero__sub">
+        ResearchFlow breaks your query into sub-questions, searches four academic databases in parallel, and synthesizes everything into a structured, cited report — all in under a minute.
+      </p>
+      <a href="index.html#hero-search" class="hiw-hero__cta">
+        Try it now
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       PIPELINE (overview strip)
+  ═══════════════════════════════════════ -->
+  <section class="pipeline" id="pipeline">
+    <div class="pipeline__header">
+      <span class="pipeline__eyebrow">The 5-Stage Pipeline</span>
+      <h2 class="pipeline__title">Every query follows the <em>same path.</em></h2>
+    </div>
+
+    <div class="pipeline__flow">
+
+      <!-- Stage 1 -->
+      <div class="pipeline__stage" data-delay="0">
+        <div class="pipeline__icon">
+          <span class="pipeline__num">1</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </div>
+        <h3 class="pipeline__stage-title">Your Question</h3>
+        <p class="pipeline__stage-desc">Type any research question in plain English — no special syntax needed.</p>
+      </div>
+
+      <div class="pipeline__connector" aria-hidden="true">
+        <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 14h16M16 8l6 6-6 6"/>
+        </svg>
+      </div>
+
+      <!-- Stage 2 -->
+      <div class="pipeline__stage" data-delay="100">
+        <div class="pipeline__icon">
+          <span class="pipeline__num">2</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <h3 class="pipeline__stage-title">Query Planner</h3>
+        <p class="pipeline__stage-desc">An LLM decomposes your question into focused sub-questions for better coverage.</p>
+      </div>
+
+      <div class="pipeline__connector" aria-hidden="true">
+        <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 14h16M16 8l6 6-6 6"/>
+        </svg>
+      </div>
+
+      <!-- Stage 3 -->
+      <div class="pipeline__stage" data-delay="200">
+        <div class="pipeline__icon">
+          <span class="pipeline__num">3</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </div>
+        <h3 class="pipeline__stage-title">Research Agent</h3>
+        <p class="pipeline__stage-desc">Searches Semantic Scholar, arXiv, PubMed, and OpenAlex simultaneously.</p>
+      </div>
+
+      <div class="pipeline__connector" aria-hidden="true">
+        <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 14h16M16 8l6 6-6 6"/>
+        </svg>
+      </div>
+
+      <!-- Stage 4 -->
+      <div class="pipeline__stage" data-delay="300">
+        <div class="pipeline__icon">
+          <span class="pipeline__num">4</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+          </svg>
+        </div>
+        <h3 class="pipeline__stage-title">Synthesis Chain</h3>
+        <p class="pipeline__stage-desc">Aggregates papers, resolves conflicts, and builds a coherent narrative with citations.</p>
+      </div>
+
+      <div class="pipeline__connector" aria-hidden="true">
+        <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 14h16M16 8l6 6-6 6"/>
+        </svg>
+      </div>
+
+      <!-- Stage 5 -->
+      <div class="pipeline__stage" data-delay="400">
+        <div class="pipeline__icon">
+          <span class="pipeline__num">5</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h3 class="pipeline__stage-title">Markdown Report</h3>
+        <p class="pipeline__stage-desc">A structured, fully cited report — ready to read, copy, or export.</p>
+      </div>
+    </div>
+
+    <div class="pipeline__footer">
+      <span class="pipeline__footer-label">Academic databases queried</span>
+      <div class="pipeline__api-tags">
+        <span class="pipeline__api-tag">Semantic Scholar</span>
+        <span class="pipeline__api-sep">·</span>
+        <span class="pipeline__api-tag">arXiv</span>
+        <span class="pipeline__api-sep">·</span>
+        <span class="pipeline__api-tag">PubMed</span>
+        <span class="pipeline__api-sep">·</span>
+        <span class="pipeline__api-tag">OpenAlex</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       OVERVIEW
+  ═══════════════════════════════════════ -->
+  <section class="hiw-deep">
+    <div class="hiw-deep__inner">
+
+      <!-- Intro -->
+      <div class="hiw-deep__step reveal" style="grid-template-columns:1fr;max-width:680px;margin:0 auto;">
+        <div class="hiw-deep__step-text" style="text-align:center;align-items:center;">
+          <span class="hiw-deep__step-num" style="font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;font-family:var(--font-body);font-weight:600;color:var(--color-brown);">How it really works</span>
+          <h3 class="hiw-deep__step-title" style="text-align:center;">From your question to a<br /><em>cited report — in one click.</em></h3>
+          <p class="hiw-deep__step-body" style="text-align:center;max-width:52ch;">
+            Here's everything that happens behind the scenes when you hit Search — explained without the jargon.
+          </p>
+        </div>
+      </div>
+
+      <div class="hiw-deep__divider"></div>
+
+      <!-- Step 1 -->
+      <div class="hiw-deep__step reveal">
+        <div class="hiw-deep__step-text">
+          <span class="hiw-deep__step-num">01</span>
+          <h3 class="hiw-deep__step-title">You type your question,<br /><em>we figure out the rest.</em></h3>
+          <p class="hiw-deep__step-body">
+            Just write your question in plain English — the same way you'd ask a friend. "What do we know about sleep deprivation and memory?" is a perfect query. ResearchFlow automatically breaks it into several focused angles to make sure nothing important gets missed.
+          </p>
+          <div class="hiw-deep__step-tags">
+            <span class="hiw-deep__tag">No jargon needed</span>
+            <span class="hiw-deep__tag">Any topic, any field</span>
+          </div>
+        </div>
+        <div class="hiw-deep__step-visual">
+          <span class="hiw-deep__visual-label">Example question</span>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--green"></div>
+            <span class="hiw-deep__visual-text">"What are the effects of sleep deprivation on memory?"</span>
+          </div>
+          <div class="hiw-deep__visual-label" style="margin-top:0.8rem;">Automatically explored as</div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--brown"></div>
+            <span class="hiw-deep__visual-text">sleep loss and short-term memory</span>
+            <span class="hiw-deep__visual-sub">angle 1</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--brown"></div>
+            <span class="hiw-deep__visual-text">chronic sleep deprivation cognitive effects</span>
+            <span class="hiw-deep__visual-sub">angle 2</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--brown"></div>
+            <span class="hiw-deep__visual-text">sleep and learning consolidation</span>
+            <span class="hiw-deep__visual-sub">angle 3</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hiw-deep__divider"></div>
+
+      <!-- Step 2 -->
+      <div class="hiw-deep__step reveal">
+        <div class="hiw-deep__step-text">
+          <span class="hiw-deep__step-num">02</span>
+          <h3 class="hiw-deep__step-title">We search four databases<br /><em>at the same time.</em></h3>
+          <p class="hiw-deep__step-body">
+            Instead of searching one database and hoping for the best, ResearchFlow hits four of the largest academic databases simultaneously. That means broader coverage, fewer gaps, and results from medicine, computer science, physics, social sciences — all in one go. The whole search takes around 20 seconds.
+          </p>
+          <div class="hiw-deep__step-tags">
+            <span class="hiw-deep__tag">Semantic Scholar</span>
+            <span class="hiw-deep__tag">arXiv</span>
+            <span class="hiw-deep__tag">PubMed</span>
+            <span class="hiw-deep__tag">OpenAlex</span>
+          </div>
+        </div>
+        <div class="hiw-deep__step-visual">
+          <span class="hiw-deep__visual-label">Databases searched</span>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--green"></div>
+            <span class="hiw-deep__visual-text">Semantic Scholar</span>
+            <span class="hiw-deep__visual-sub">200M+ papers</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--green"></div>
+            <span class="hiw-deep__visual-text">arXiv</span>
+            <span class="hiw-deep__visual-sub">Preprints &amp; CS</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--green"></div>
+            <span class="hiw-deep__visual-text">PubMed</span>
+            <span class="hiw-deep__visual-sub">36M+ medical papers</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--green"></div>
+            <span class="hiw-deep__visual-text">OpenAlex</span>
+            <span class="hiw-deep__visual-sub">250M+ works</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hiw-deep__divider"></div>
+
+      <!-- Step 3 -->
+      <div class="hiw-deep__step reveal">
+        <div class="hiw-deep__step-text">
+          <span class="hiw-deep__step-num">03</span>
+          <h3 class="hiw-deep__step-title">We filter the noise,<br /><em>keep only what matters.</em></h3>
+          <p class="hiw-deep__step-body">
+            Searching four databases can pull in a lot of irrelevant results. ResearchFlow automatically filters papers to keep only those that are actually relevant to your question. Duplicates are removed, irrelevant results are dropped, and what's left is ranked by how useful it's likely to be.
+          </p>
+          <div class="hiw-deep__step-tags">
+            <span class="hiw-deep__tag">Duplicates removed</span>
+            <span class="hiw-deep__tag">Relevance ranked</span>
+            <span class="hiw-deep__tag">No spam results</span>
+          </div>
+        </div>
+        <div class="hiw-deep__step-visual">
+          <span class="hiw-deep__visual-label">What gets filtered</span>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--amber"></div>
+            <span class="hiw-deep__visual-text">Duplicate papers (same DOI)</span>
+            <span class="hiw-deep__visual-sub">removed</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--amber"></div>
+            <span class="hiw-deep__visual-text">Low-relevance results</span>
+            <span class="hiw-deep__visual-sub">removed</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--green"></div>
+            <span class="hiw-deep__visual-text">Top relevant papers</span>
+            <span class="hiw-deep__visual-sub">kept</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--green"></div>
+            <span class="hiw-deep__visual-text">Ranked by importance</span>
+            <span class="hiw-deep__visual-sub">kept</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hiw-deep__divider"></div>
+
+      <!-- Step 4 -->
+      <div class="hiw-deep__step reveal">
+        <div class="hiw-deep__step-text">
+          <span class="hiw-deep__step-num">04</span>
+          <h3 class="hiw-deep__step-title">You get a real report,<br /><em>not a list of links.</em></h3>
+          <p class="hiw-deep__step-body">
+            The final step brings everything together into a structured, readable report. It covers the key findings, notes where researchers agree or disagree, and cites every claim with a real paper. You can read it immediately, copy it, or use it as a starting point for deeper research. Every citation links back to the original source.
+          </p>
+          <div class="hiw-deep__step-tags">
+            <span class="hiw-deep__tag">Real citations</span>
+            <span class="hiw-deep__tag">Structured format</span>
+            <span class="hiw-deep__tag">Ready to use</span>
+          </div>
+        </div>
+        <div class="hiw-deep__step-visual">
+          <span class="hiw-deep__visual-label">Your report includes</span>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--brown"></div>
+            <span class="hiw-deep__visual-text">Executive Summary</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--brown"></div>
+            <span class="hiw-deep__visual-text">Key Findings</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--amber"></div>
+            <span class="hiw-deep__visual-text">Where experts disagree</span>
+          </div>
+          <div class="hiw-deep__visual-row">
+            <div class="hiw-deep__visual-dot hiw-deep__visual-dot--brown"></div>
+            <span class="hiw-deep__visual-text">Full reference list</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hiw-deep__divider"></div>
+
+      <!-- GitHub CTA -->
+      <div class="hiw-deep__github reveal" style="text-align:center; padding: 1.5rem 0 0.5rem;">
+        <p style="font-family:var(--font-body); font-size:1rem; color:var(--color-espresso); font-weight:600; margin-bottom:0.5rem;">Curious about what's under the hood?</p>
+        <p style="font-family:var(--font-body); font-size:0.93rem; color:var(--color-brown); margin-bottom:1.4rem; line-height:1.7; max-width:48ch; margin-left:auto; margin-right:auto;">
+          ResearchFlow is fully open-source. You can read the code, self-host your own instance, or contribute to the project on GitHub.
+        </p>
+        <a href="https://github.com/sujalsuyash/ResearchFlow" target="_blank" rel="noopener"
+           style="display:inline-flex;align-items:center;gap:0.6rem;padding:0.8rem 2rem;background:var(--color-espresso);color:var(--color-cream);font-family:var(--font-body);font-size:0.93rem;font-weight:500;border-radius:999px;text-decoration:none;transition:background 0.2s,transform 0.2s;box-shadow:0 4px 20px rgba(44,31,26,0.18);"
+           onmouseover="this.style.background='var(--color-brown)';this.style.transform='translateY(-2px)'"
+           onmouseout="this.style.background='var(--color-espresso)';this.style.transform='translateY(0)'">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.34-3.369-1.34-.454-1.154-1.11-1.461-1.11-1.461-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0110 4.844a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C17.137 18.163 20 14.418 20 10c0-5.523-4.477-10-10-10z"/>
+          </svg>
+          View the full project on GitHub
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4.5M9.5 2.5V7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+  <section class="hiw-faq">
+    <div class="hiw-faq__inner">
+      <div class="hiw-faq__header reveal">
+        <span class="hiw-faq__eyebrow">Common Questions</span>
+        <h2 class="hiw-faq__title">Good questions deserve good answers.</h2>
+      </div>
+
+      <div class="hiw-faq__list reveal">
+
+        <div class="hiw-faq__item">
+          <button class="hiw-faq__question" aria-expanded="false">
+            How long does a research query take?
+            <svg class="hiw-faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <div class="hiw-faq__answer">
+            <p class="hiw-faq__answer-inner">Most queries complete in 20–40 seconds. The time depends on how many sub-questions are generated and how quickly the academic APIs respond. Complex, multi-domain questions can occasionally take up to a minute.</p>
+          </div>
+        </div>
+
+        <div class="hiw-faq__item">
+          <button class="hiw-faq__question" aria-expanded="false">
+            Is the content behind paywalls?
+            <svg class="hiw-faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <div class="hiw-faq__answer">
+            <p class="hiw-faq__answer-inner">ResearchFlow only retrieves metadata and abstracts, which are freely available through these APIs. It does not download or reproduce full-text papers from paywalled journals. The report is synthesized from publicly accessible information.</p>
+          </div>
+        </div>
+
+        <div class="hiw-faq__item">
+          <button class="hiw-faq__question" aria-expanded="false">
+            How accurate are the citations?
+            <svg class="hiw-faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <div class="hiw-faq__answer">
+            <p class="hiw-faq__answer-inner">Citations are pulled directly from the academic APIs — they're not hallucinated. Each referenced paper has a real DOI or URL. That said, always verify any paper before including it in formal academic work, as database metadata can occasionally contain errors.</p>
+          </div>
+        </div>
+
+        <div class="hiw-faq__item">
+          <button class="hiw-faq__question" aria-expanded="false">
+            What kinds of questions work best?
+            <svg class="hiw-faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <div class="hiw-faq__answer">
+            <p class="hiw-faq__answer-inner">ResearchFlow works best for empirical, scientific, or technical questions — things with existing academic literature. "What are the effects of X on Y?" or "What does research say about Z?" are ideal. Very recent events (last few months) may have limited coverage depending on how quickly APIs index new papers.</p>
+          </div>
+        </div>
+
+        <div class="hiw-faq__item">
+          <button class="hiw-faq__question" aria-expanded="false">
+            Is it really free?
+            <svg class="hiw-faq__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <div class="hiw-faq__answer">
+            <p class="hiw-faq__answer-inner">Yes. ResearchFlow is open-source and free to use. The backend runs on Railway's free tier, so there may be occasional cold-start delays, but there's no account, no paywall, and no usage cap.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       CTA STRIP
+  ═══════════════════════════════════════ -->
+  <section class="hiw-cta">
+    <div class="hiw-cta__inner reveal">
+      <h2 class="hiw-cta__heading">Ready to stop searching<br /><em>and start finding?</em></h2>
+      <p class="hiw-cta__body">Ask your first research question. No signup. No setup. Just results.</p>
+      <a href="index.html#hero-search" class="hiw-cta__btn">
+        Start Researching
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       FORTUNE COOKIE
+  ═══════════════════════════════════════ -->
+  <div class="cookie-widget" id="cookie-widget">
+    <span class="cookie-widget__label">Need a break?</span>
+    <div class="cookie-widget__area" id="cookie-area" role="button" tabindex="0" aria-label="Click for a fortune">
+      <div class="cookie-widget__whole" id="cookie-whole">
+        <img src="assets/cookie.svg" alt="Fortune cookie" width="72" height="72" />
+      </div>
+      <div class="cookie-widget__halves" id="cookie-halves">
+        <div class="cookie-widget__half cookie-widget__half--left" id="cookie-left">
+          <img src="assets/cookie-left.svg" alt="" width="40" height="72" />
+        </div>
+        <div class="cookie-widget__half cookie-widget__half--right" id="cookie-right">
+          <img src="assets/cookie-right.svg" alt="" width="40" height="72" />
+        </div>
+      </div>
+      <div class="cookie-widget__fortune" id="cookie-fortune">
+        <p class="cookie-widget__fortune-text" id="fortune-text"></p>
+        <span class="cookie-widget__fortune-sep"></span>
+      </div>
+    </div>
+    <span class="cookie-widget__reset-hint">click to reset</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__tagline">Made with <span class="footer__heart">♥</span> for the researchers</p>
+      <nav class="footer__links">
+        <a href="https://github.com/sujalsuyash/ResearchFlow" target="_blank" rel="noopener" class="footer__link">
+          GitHub
+          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4.5M9.5 2.5V7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <span class="footer__sep">·</span>
+        <a href="https://researchflow-production.up.railway.app/health" target="_blank" rel="noopener" class="footer__link">
+          Health Check
+          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.5 9.5L9.5 2.5M9.5 2.5H4.5M9.5 2.5V7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </nav>
+      <p class="footer__copy">© 2025 ResearchFlow · Open Source · MIT License</p>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="js/scroll.js"></script>
+  <script src="js/cookie.js"></script>
+  <script src="js/pipeline.js"></script>
+  <script>
+    // Navbar scroll behaviour
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    hamburger.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('open', open);
+      hamburger.setAttribute('aria-expanded', open);
+    });
+
+    // FAQ accordion
+    document.querySelectorAll('.hiw-faq__question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.hiw-faq__item');
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.hiw-faq__item').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.hiw-faq__question').setAttribute('aria-expanded', 'false');
+        });
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

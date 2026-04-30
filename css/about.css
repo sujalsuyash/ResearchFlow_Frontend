@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════════
+   about.css — About section
+═══════════════════════════════════════════ */
+
+.about {
+  padding: 6rem 2rem;
+  background: var(--color-cream);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Faint background circle for depth */
+.about::after {
+  content: '';
+  position: absolute;
+  right: -120px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,170,150,0.1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Two-column inner ────────────────────── */
+.about__inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Left: text column ───────────────────── */
+.about__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.about__eyebrow {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-brown);
+}
+
+.about__heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.5vw, 2.8rem);
+  font-weight: 600;
+  color: var(--color-espresso);
+  line-height: 1.2;
+}
+
+.about__heading em {
+  font-style: italic;
+  color: var(--color-brown);
+}
+
+.about__body {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--color-brown);
+  max-width: 48ch;
+}
+
+/* ── Stats row ───────────────────────────── */
+.about__stats {
+  display: flex;
+  gap: 2.5rem;
+  padding: 1.4rem 0;
+  border-top: 1px solid rgba(201,170,150,0.4);
+  border-bottom: 1px solid rgba(201,170,150,0.4);
+}
+
+.about__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.about__stat-num {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-espresso);
+  line-height: 1;
+}
+
+.about__stat-label {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-dusty);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── GitHub button ───────────────────────── */
+.about__github-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  align-self: flex-start;
+  padding: 0.7rem 1.4rem;
+  background: var(--color-espresso);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: var(--radius-pill);
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: 0 4px 16px rgba(44,31,26,0.18);
+}
+
+.about__github-btn:hover {
+  background: var(--color-brown);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(44,31,26,0.22);
+}
+
+.about__github-btn:active {
+  transform: translateY(0);
+}
+
+/* Constrain GitHub icon */
+.about__github-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ── Right: illustration column ──────────── */
+.about__visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Constrain the decorative illustration SVG — no overflow */
+.about__illustration {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 12px 40px rgba(139,99,85,0.1));
+}
+
+/* Floating animation on the illustration */
+@media (prefers-reduced-motion: no-preference) {
+  .about__illustration {
+    animation: float-illus 4s ease-in-out infinite;
+  }
+}
+
+@keyframes float-illus {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 900px) {
+  .about__inner {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .about__visual {
+    order: -1; /* illustration on top for mobile */
+  }
+
+  .about__illustration {
+    max-width: 260px;
+  }
+
+  .about__body {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .about {
+    padding: 4rem 1.5rem;
+  }
+
+  .about__stats {
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .about__stat-num {
+    font-size: 1.6rem;
+  }
+}

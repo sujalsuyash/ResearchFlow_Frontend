@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ResearchFlow — Autonomous research agent. Query academic APIs, synthesize papers, get structured reports in minutes." />
+  <meta name="theme-color" content="#EDE8DC" />
+  <title>ResearchFlow — Research smarter, not harder.</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- marked.js for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/hero.css" />
+  <link rel="stylesheet" href="css/pipeline.css" />
+  <link rel="stylesheet" href="css/about.css" />
+  <link rel="stylesheet" href="css/cookie.css" />
+  <link rel="stylesheet" href="css/footer.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       NAVBAR
+  ═══════════════════════════════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a href="#" class="navbar__logo">ResearchFlow</a>
+
+      <ul class="navbar__links">
+        <li><a href="how-it-works.html" class="navbar__link">How it Works</a></li>
+        <li><a href="#about" class="navbar__link">About</a></li>
+        <li><a href="#hero-search" class="navbar__cta">Try it</a></li>
+      </ul>
+
+      <!-- Mobile hamburger -->
+      <button class="navbar__hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="navbar__mobile" id="mobile-menu">
+      <a href="how-it-works.html" class="navbar__mobile-link">How it Works</a>
+      <a href="#about" class="navbar__mobile-link">About</a>
+      <a href="#hero-search" class="navbar__mobile-cta">Try it</a>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════ -->
+  <section class="hero" id="home">
+    <div class="hero__bg-texture"></div>
+    <div class="hero__radial"></div>
+
+    <div class="hero__content">
+      <div class="hero__eyebrow">
+        <span class="hero__badge">
+          <span class="hero__badge-dot"></span>
+          Powered by 4 Academic APIs
+        </span>
+      </div>
+
+      <h1 class="hero__heading">
+        Research smarter,<br />
+        <em>not harder.</em>
+      </h1>
+
+      <p class="hero__typewriter-wrapper">
+        <span class="hero__typewriter" id="typewriter"></span><span class="hero__cursor" id="cursor">|</span>
+      </p>
+
+      <!-- CTA → Search morphing area -->
+      <!-- Inside index.html, replace ONLY the Start Researching button -->
+      <a href="app.html" class="hero__cta-btn" id="cta-btn" style="text-decoration: none;">
+        Start Researching
+        <svg class="hero__arrow" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+        <div class="hero__search-box" id="search-box">
+          <div class="hero__search-inner">
+            <svg class="hero__search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M13 13L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <input
+              type="text"
+              class="hero__search-input"
+              id="search-input"
+              placeholder="Ask a research question..."
+              autocomplete="off"
+            />
+            <button class="hero__search-submit" id="search-submit">
+              <span class="hero__search-submit-text">Search</span>
+              <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 10H16M16 10L10 4M16 10L10 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <p class="hero__search-hint">Try: "What are the latest advances in quantum computing?" or "Summarize research on mRNA vaccines"</p>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div class="hero__loading" id="hero-loading" aria-live="polite">
+        <div class="hero__loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <p class="hero__loading-text" id="loading-text">Querying academic databases…</p>
+      </div>
+
+      <!-- Results area -->
+      <div class="hero__results" id="hero-results">
+        <div class="hero__results-header">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
+          </svg>
+          <span>Research Report Generated</span>
+          <button class="hero__results-new" id="new-search-btn">New Search</button>
+        </div>
+        <div class="hero__results-body markdown-body" id="results-content"></div>
+      </div>
+
+      <!-- Error state -->
+      <div class="hero__error" id="hero-error">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M10 6v5M10 14v.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <p>Something went wrong. The researchers are on it.</p>
+        <button class="hero__error-retry" id="error-retry-btn">Try Again</button>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero__scroll-hint">
+      <span>Scroll to explore</span>
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       ABOUT
+  ═══════════════════════════════════════ -->
+  <section class="about" id="about">
+    <div class="about__inner">
+      <div class="about__text reveal">
+        <span class="about__eyebrow">What is ResearchFlow?</span>
+        <h2 class="about__heading">Your personal<br /><em>research assistant.</em></h2>
+        <p class="about__body">
+          You ask a question in plain English. ResearchFlow searches four major academic databases — Semantic Scholar, PubMed, arXiv, and OpenAlex — all at once, filters out the noise, and hands you back a clean, cited research report. In under a minute.
+        </p>
+        <p class="about__body" style="margin-top:0.8rem;">
+          No sign-up. No paywall. No copy-pasting abstracts. Just the research you need, exactly when you need it — completely free and open-source.
+        </p>
+        <div class="about__stats">
+          <div class="about__stat">
+            <span class="about__stat-num">4</span>
+            <span class="about__stat-label">Databases at once</span>
+          </div>
+          <div class="about__stat">
+            <span class="about__stat-num">&lt;60s</span>
+            <span class="about__stat-label">To a full report</span>
+          </div>
+          <div class="about__stat">
+            <span class="about__stat-num">100%</span>
+            <span class="about__stat-label">Free &amp; open-source</span>
+          </div>
+        </div>
+        <a href="https://github.com/sujalsuyash/ResearchFlow" target="_blank" rel="noopener" class="about__github-btn">
+          <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.34-3.369-1.34-.454-1.154-1.11-1.461-1.11-1.461-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0110 4.844a9.59 9.59 0 012.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C17.137 18.163 20 14.418 20 10c0-5.523-4.477-10-10-10z"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+
+      <div class="about__visual reveal">
+        <!-- Decorative feature cards -->
+        <div style="display:flex;flex-direction:column;gap:1rem;width:100%;max-width:340px;margin:0 auto;">
+          <div style="background:var(--color-white);border:1px solid rgba(201,170,150,0.45);border-radius:16px;padding:1.4rem 1.6rem;display:flex;align-items:flex-start;gap:1rem;box-shadow:0 4px 20px rgba(44,31,26,0.07);">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(139,99,85,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B6355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+            </div>
+            <div>
+              <p style="font-family:var(--font-body);font-size:0.9rem;font-weight:600;color:var(--color-espresso);margin-bottom:0.25rem;">Ask in plain English</p>
+              <p style="font-family:var(--font-body);font-size:0.82rem;color:var(--color-brown);line-height:1.6;">No jargon, no Boolean operators — just your question.</p>
+            </div>
+          </div>
+          <div style="background:var(--color-white);border:1px solid rgba(201,170,150,0.45);border-radius:16px;padding:1.4rem 1.6rem;display:flex;align-items:flex-start;gap:1rem;box-shadow:0 4px 20px rgba(44,31,26,0.07);">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(139,99,85,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B6355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <div>
+              <p style="font-family:var(--font-body);font-size:0.9rem;font-weight:600;color:var(--color-espresso);margin-bottom:0.25rem;">Searches 4 databases simultaneously</p>
+              <p style="font-family:var(--font-body);font-size:0.82rem;color:var(--color-brown);line-height:1.6;">Semantic Scholar, PubMed, arXiv, OpenAlex — all at once.</p>
+            </div>
+          </div>
+          <div style="background:var(--color-white);border:1px solid rgba(201,170,150,0.45);border-radius:16px;padding:1.4rem 1.6rem;display:flex;align-items:flex-start;gap:1rem;box-shadow:0 4px 20px rgba(44,31,26,0.07);">
+            <div style="width:40px;height:40px;border-radius:10px;background:rgba(139,99,85,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B6355" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg>
+            </div>
+            <div>
+              <p style="font-family:var(--font-body);font-size:0.9rem;font-weight:600;color:var(--color-espresso);margin-bottom:0.25rem;">Get a cited report</p>
+              <p style="font-family:var(--font-body);font-size:0.82rem;color:var(--color-brown);line-height:1.6;">A structured summary with real citations — not hallucinations.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+   <!-- ═══════════════════════════════════════
+       FORTUNE COOKIE
+  ═══════════════════════════════════════ -->
+  <div class="cookie-widget" id="cookie-widget">
+    <span class="cookie-widget__label">Need a break?</span>
+    <div class="cookie-widget__area" id="cookie-area" role="button" tabindex="0" aria-label="Click for a fortune">
+      <div class="cookie-widget__whole" id="cookie-whole">
+        <img src="assets/cookie.svg" alt="Fortune cookie" width="72" height="72" />
+      </div>
+      <div class="cookie-widget__halves" id="cookie-halves">
+        <div class="cookie-widget__half cookie-widget__half--left" id="cookie-left">
+          <img src="assets/cookie-left.svg" alt="" width="40" height="72" />
+        </div>
+        <div class="cookie-widget__half cookie-widget__half--right" id="cookie-right">
+          <img src="assets/cookie-right.svg" alt="" width="40" height="72" />
+        </div>
+      </div>
+      <div class="cookie-widget__fortune" id="cookie-fortune">
+        <p class="cookie-widget__fortune-text" id="fortune-text"></p>
+        <span class="cookie-widget__fortune-sep"></span>
+      </div>
+    </div>
+    <span class="cookie-widget__reset-hint">click to reset</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__tagline">Made with ♥ for the researchers</p>
+      <nav class="footer__links">
+        <a href="https://github.com/sujalsuyash/ResearchFlow" target="_blank" rel="noopener" class="footer__link">GitHub</a>
+        <span class="footer__sep">·</span>
+        <a href="https://researchflow-production.up.railway.app/health" target="_blank" rel="noopener" class="footer__link">Health Check</a>
+      </nav>
+      <p class="footer__copy">© 2025 ResearchFlow · Open Source · MIT License</p>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script src="js/typewriter.js"></script>
+  <script src="js/scroll.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/cookie.js"></script>
+  <script src="js/pipeline.js"></script>
+</body>
+</html>

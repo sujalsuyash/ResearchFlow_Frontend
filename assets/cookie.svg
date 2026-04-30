@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Main cookie body -->
+  <path d="M15 65 C 15 25, 85 25, 85 65 C 85 85, 50 90, 50 65 C 50 90, 15 85, 15 65 Z" fill="#C9AA96" stroke="#8B6355" stroke-width="5" stroke-linejoin="round"/>
+  <!-- Center fold line -->
+  <path d="M50 65 C 35 45, 65 45, 50 65" fill="none" stroke="#8B6355" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

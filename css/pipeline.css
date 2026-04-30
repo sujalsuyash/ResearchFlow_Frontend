@@ -1,0 +1,263 @@
+/* ═══════════════════════════════════════════
+   pipeline.css — How It Works section
+═══════════════════════════════════════════ */
+
+.pipeline {
+  padding: 6rem 2rem;
+  background: var(--color-white);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle top border */
+.pipeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 2px;
+  background: var(--color-dusty);
+  border-radius: 2px;
+}
+
+/* ── Section header ──────────────────────── */
+.pipeline__header {
+  max-width: var(--max-width);
+  margin: 0 auto 3.5rem;
+  text-align: center;
+}
+
+.pipeline__eyebrow {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-brown);
+  margin-bottom: 0.8rem;
+}
+
+.pipeline__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.6rem);
+  font-weight: 600;
+  color: var(--color-espresso);
+  line-height: 1.25;
+}
+
+.pipeline__title em {
+  font-style: italic;
+  color: var(--color-brown);
+}
+
+/* ── Flow container ──────────────────────── */
+.pipeline__flow {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+}
+
+/* ── Single stage card ───────────────────── */
+.pipeline__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  max-width: 200px;
+  position: relative;
+  /* reveal animation base */
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.pipeline__stage.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered delays applied via JS (inline style) */
+
+/* Icon circle */
+.pipeline__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-cream);
+  border: 2px solid var(--color-dusty);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  position: relative;
+  transition: border-color var(--transition-med), box-shadow var(--transition-med);
+}
+
+.pipeline__stage:hover .pipeline__icon {
+  border-color: var(--color-brown);
+  box-shadow: 0 4px 20px rgba(139,99,85,0.15);
+}
+
+/* Constrain icons inside the circle */
+.pipeline__icon svg {
+  width: 26px;
+  height: 26px;
+  color: var(--color-brown);
+  flex-shrink: 0;
+}
+
+/* Step number badge */
+.pipeline__num {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-brown);
+  color: var(--color-cream);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border: 2px solid var(--color-white);
+}
+
+.pipeline__stage-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-espresso);
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+}
+
+.pipeline__stage-desc {
+  font-size: 0.8rem;
+  color: var(--color-brown);
+  line-height: 1.55;
+  max-width: 155px;
+}
+
+/* ── Connector arrows ────────────────────── */
+.pipeline__connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 30px; /* align with center of icon */
+  flex-shrink: 0;
+  width: 48px;
+  color: var(--color-dusty);
+  opacity: 0;
+  transition: opacity 0.5s ease 0.3s;
+}
+
+.pipeline__connector.visible {
+  opacity: 1;
+}
+
+/* Constrain the connector arrow SVG */
+.pipeline__connector svg {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+/* ── API tags row ────────────────────────── */
+.pipeline__footer {
+  max-width: var(--max-width);
+  margin: 3rem auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.pipeline__footer-label {
+  font-size: 0.78rem;
+  color: var(--color-dusty);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pipeline__api-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.2rem;
+}
+
+.pipeline__api-tag {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: var(--color-cream);
+  border: 1px solid var(--color-dusty);
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--color-brown);
+}
+
+.pipeline__api-sep {
+  color: var(--color-dusty);
+  font-size: 0.9rem;
+  padding: 0 0.1rem;
+}
+
+/* ── Responsive: vertical stack on mobile ── */
+@media (max-width: 768px) {
+  .pipeline {
+    padding: 4rem 1.5rem;
+  }
+
+  .pipeline__flow {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .pipeline__stage {
+    max-width: 320px;
+    width: 100%;
+    flex-direction: row;
+    text-align: left;
+    align-items: flex-start;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid rgba(201,170,150,0.3);
+    gap: 1.2rem;
+  }
+
+  .pipeline__stage:last-of-type {
+    border-bottom: none;
+  }
+
+  .pipeline__icon {
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .pipeline__stage-desc {
+    max-width: none;
+  }
+
+  .pipeline__connector {
+    display: none;
+  }
+
+  .pipeline__api-tags {
+    gap: 0.4rem;
+  }
+}
