@@ -190,4 +190,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (errorRetryBtn) {
         errorRetryBtn.addEventListener("click", executeSearch);
     }
+
+    window.addEventListener("pageshow", (event) => {
+    if (ctaBtn && searchBox) {
+        ctaBtn.classList.remove("hidden");
+        searchBox.classList.remove("visible");
+        loadingState.classList.remove("active");
+        resultsState.classList.remove("active");
+        errorState.classList.remove("active");
+    }
+});
+
 });
