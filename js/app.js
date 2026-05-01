@@ -325,7 +325,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           password,
           options: {
             data: { full_name: fullName },
-            emailRedirectTo: "http://127.0.0.1:5500/app.html"
+            emailRedirectTo: "https://episteme-mu.vercel.app/app.html"
             },
           });
         if (error) throw error;
@@ -624,6 +624,7 @@ if (data.session) {
 
   const rawText = refContainer.innerText || refContainer.textContent;
   const lines = rawText.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+
 
   const table = document.createElement("table");
   table.style.cssText = `
