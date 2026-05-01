@@ -1,0 +1,263 @@
+# ResearchFlow — Frontend
+
+> An elegant research workspace that turns complex academic questions into cited, structured reports — powered by an autonomous AI pipeline.
+
+![ResearchFlow](https://img.shields.io/badge/Status-Active-brightgreen) ![Supabase](https://img.shields.io/badge/Auth-Supabase-3ECF8E?logo=supabase) ![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi) ![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)
+
+---
+
+## 📌 Overview
+
+ResearchFlow is a web-based research assistant that accepts a natural language query and returns a fully synthesised academic report — complete with paper citations, filtered results from Semantic Scholar, arXiv, and PubMed, and a structured markdown report. This repository contains the **frontend only**. The backend (FastAPI + Redis + Groq/Gemini LLMs) is deployed separately on Railway.
+
+---
+
+## ✨ Features
+
+- **Autonomous Research Pipeline** — Submit a query, get back a structured academic report with cited papers
+- **Real-time Status UI** — 4-step animated progress tracker while the backend processes your query
+- **User Authentication** — Sign up, log in, email verification, and session persistence via Supabase Auth
+- **Research History** — Every search is saved per user and accessible from the sidebar; click any item to reload the report instantly
+- **Delete History** — Remove individual searches with a hover-revealed × button
+- **Markdown Rendering** — Reports rendered with full heading, list, link, and code support via `marked.js`
+- **Responsive Auth Modal** — Toggle between Log In and Sign Up with animated transitions, inline error messages, and password visibility toggle
+- **Fortune Cookie Widget** — A small interactive break widget for long research sessions
+- **Guest Mode** — Full search functionality without an account; history saving requires login
+
+---
+
+## 🗂️ Project Structure
+
+```
+researchFlow_frontend/
+│
+├── index.html              # Landing / home page
+├── app.html                # Main workspace (search + results)
+│
+├── css/
+│   ├── main.css            # Global design tokens, typography, base styles
+│   └── cookie.css          # Fortune cookie widget styles
+│
+├── js/
+│   ├── auth.example.js     # Template for Supabase credentials (safe to commit)
+│   ├── auth.js             # Supabase client init — NOT committed (see .gitignore)
+│   ├── app.js              # Core workspace logic (search, auth, history)
+│   └── cookie.js           # Fortune cookie widget logic
+│
+├── assets/
+│   ├── cookie.svg          # Fortune cookie illustrations
+│   ├── cookie-left.svg
+│   └── cookie-right.svg
+│
+├── .gitignore              # Excludes auth.js from version control
+└── README.md
+```
+
+---
+
+## 🔧 Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Vanilla HTML, CSS, JavaScript (ES2022) |
+| Auth & Database | [Supabase](https://supabase.com) (Auth + PostgreSQL) |
+| Markdown Rendering | [marked.js](https://marked.js.org) |
+| Backend API | FastAPI on [Railway](https://railway.app) |
+| Job Queue | Redis (managed via Railway) |
+| LLM Providers | Groq (LLaMA) + Google Gemini (fallback) |
+| Fonts | Playfair Display + DM Sans (Google Fonts) |
+| Deployment | Vercel (frontend) |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- A [Supabase](https://supabase.com) project
+- The ResearchFlow backend running (see backend repo)
+- A code editor (VS Code recommended)
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/ResearchFlow_Frontend.git
+cd ResearchFlow_Frontend
+```
+
+### 2. Set up Supabase credentials
+
+Copy the example auth file and fill in your credentials:
+
+```bash
+cp js/auth.example.js js/auth.js
+```
+
+Open `js/auth.js` and replace the placeholders:
+
+```js
+const SUPABASE_URL  = "https://your-project-id.supabase.co";
+const SUPABASE_ANON = "your-publishable-anon-key";
+
+const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+```
+
+> ⚠️ Never commit `auth.js`. It is listed in `.gitignore` and must stay local.
+
+### 3. Set up the Supabase database
+
+Go to **Supabase Dashboard → SQL Editor → New Query**, paste the contents of `supabase_schema.sql` (available separately), and click **Run**.
+
+This creates:
+- `profiles` table — stores user name, email, sign-up time, last login
+- `research_history` table — stores queries and full report markdown per user
+- Row Level Security policies
+- Auto-profile trigger on sign up
+- Admin overview view
+
+### 4. Run locally
+
+Open `index.html` with [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) in VS Code, or simply open the file directly in your browser.
+
+> The app runs at `http://127.0.0.1:5500` with Live Server.
+
+---
+
+## 🗄️ Database Schema
+
+### `profiles`
+| Column | Type | Description |
+|---|---|---|
+| `id` | uuid | Links to Supabase `auth.users` |
+| `full_name` | text | User's name from sign-up |
+| `email` | text | User's email address |
+| `created_at` | timestamptz | Account creation time |
+| `last_sign_in` | timestamptz | Updated on every login |
+
+### `research_history`
+| Column | Type | Description |
+|---|---|---|
+| `id` | uuid | Auto-generated primary key |
+| `user_id` | uuid | Foreign key to `profiles.id` |
+| `query` | text | The research question submitted |
+| `report` | text | Full markdown report returned |
+| `paper_count` | int | Number of papers cited |
+| `total_seconds` | float | Pipeline execution time |
+| `created_at` | timestamptz | When the search was run |
+
+---
+
+## 🔌 Backend API
+
+The frontend communicates with the FastAPI backend via two endpoints:
+
+### `POST /research`
+Submit a new research query.
+
+```json
+// Request body
+{
+  "query": "Neuro-symbolic AI in medical diagnosis",
+  "max_papers": 40,
+  "papers_per_step": 10,
+  "tool_timeout": 120.0
+}
+
+// Response
+{
+  "job_id": "7b8a2525-dca9-431b-86cf-3cdb615ade4f",
+  "status": "pending",
+  "message": "Job queued. Poll GET /research/{job_id} for updates."
+}
+```
+
+### `GET /research/{job_id}`
+Poll for job status. Call every 3 seconds until `status` is `"done"` or `"failed"`.
+
+```json
+// When done
+{
+  "job_id": "7b8a2525-...",
+  "status": "done",
+  "report": "## Introduction\n...",
+  "paper_count": 23,
+  "total_seconds": 76.0
+}
+```
+
+**Status values:**
+- `pending` — job queued, not started
+- `running` — pipeline executing (~50–80s)
+- `done` — report ready
+- `failed` — error occurred, check `error` field
+
+---
+
+## 🔐 Authentication Flow
+
+```
+User clicks Sign Up
+       │
+       ▼
+Supabase creates auth.users row
+       │
+       ▼
+DB trigger auto-creates profiles row
+       │
+       ▼
+Email confirmation sent (if enabled)
+       │
+       ▼
+User clicks link → redirected to app.html
+       │
+       ▼
+Session persists across page reloads
+```
+
+---
+
+## 🌐 Deployment (Vercel)
+
+1. Push your code to GitHub (ensure `auth.js` is not included)
+2. Go to [vercel.com](https://vercel.com) → **New Project** → Import your GitHub repo
+3. No build settings needed — it's a static site
+4. After deploy, update two places with your new production URL:
+   - **Supabase → Authentication → URL Configuration → Site URL**
+   - **Supabase → Authentication → URL Configuration → Redirect URLs**
+   - The `emailRedirectTo` value inside `app.js` signUp call
+
+---
+
+## ⚙️ Configuration Reference
+
+| Variable | File | Description |
+|---|---|---|
+| `SUPABASE_URL` | `js/auth.js` | Your Supabase project URL |
+| `SUPABASE_ANON` | `js/auth.js` | Your Supabase publishable key |
+| `API_BASE` | `js/app.js` | Backend URL (Railway) |
+| `STEP_DELAYS` | `js/app.js` | Timing for the 4 loading steps (seconds) |
+| `MAX_POLLS` | `js/app.js` | Max polling attempts (default: 60 = 3 min) |
+| `emailRedirectTo` | `js/app.js` | Post-verification redirect URL |
+
+---
+
+## 🛠️ Known Limitations
+
+- **Free-tier rate limits** — The backend uses Groq and Gemini free tiers. Heavy usage will trigger `ResilientLLM: all providers exhausted`. Upgrading to paid API keys resolves this.
+- **Job TTL** — Research jobs expire from Redis after 1 hour. Refreshing after that will show a 404 from the backend.
+- **No offline support** — Requires active internet for both the backend pipeline and Supabase auth.
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Google OAuth login
+- [ ] Export report as PDF
+- [ ] Deploy to custom domain
+- [ ] Search within history
+- [ ] Share report via public link
+- [ ] Dark mode
+
+
+## 📄 License
+
+This project is for personal and educational use. All rights reserved.

@@ -151,6 +151,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const markdown = finalData.report || "No report was returned.";
       resultsContainer.innerHTML = marked.parse(markdown);
+      formatReferencesAsTable(resultsContainer); 
       resultsContainer.classList.add("active");
 
       // Open all links in a new tab
@@ -322,20 +323,62 @@ document.addEventListener("DOMContentLoaded", async () => {
         const { data, error } = await _supabase.auth.signUp({
           email,
           password,
-          options: { data: { full_name: fullName } },
-        });
+          options: {
+            data: { full_name: fullName },
+            emailRedirectTo: "http://127.0.0.1:5500/app.html"
+            },
+          });
         if (error) throw error;
 
         // Profile is created automatically by the DB trigger (handle_new_user)
         closeAuth();
 
-        // Supabase may require email confirmation depending on your settings.
-        // If "Confirm email" is OFF in Auth settings, user is logged in immediately.
-        if (data.session) {
-          updateUIForUser(data.user);
-        } else {
-          showTempMessage("Check your email to confirm your account!");
-        }
+if (data.session) {
+  // Email confirmation is OFF — user is logged in immediately
+  updateUIForUser(data.user);
+  loadHistory();
+} else {
+  // Email confirmation is ON — show a proper modal message
+  authOverlay.classList.add("active");
+  authForm.style.display = "none";
+  document.querySelector(".auth-footer").style.display = "none";
+
+  const confirmMsg = document.createElement("div");
+  confirmMsg.id = "confirm-msg";
+  confirmMsg.style.cssText = "text-align:center;padding:1.5rem 0;";
+  confirmMsg.innerHTML = `
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-brown)" stroke-width="1.5" style="margin-bottom:1rem">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+      <polyline points="22,6 12,13 2,6"/>
+    </svg>
+    <h3 style="font-family:var(--font-display);color:var(--color-espresso);margin-bottom:0.5rem;">Check your inbox</h3>
+    <p style="color:var(--color-brown);font-size:0.9rem;line-height:1.6;">
+      We sent a confirmation link to<br>
+      <strong>${email}</strong><br><br>
+      Click the link in the email to activate your account.
+    </p>
+    <button id="confirm-close-btn" style="
+      margin-top:1.5rem;
+      padding:0.6rem 1.5rem;
+      background:var(--color-espresso);
+      color:var(--color-cream);
+      border:none;
+      border-radius:var(--radius-pill);
+      cursor:pointer;
+      font-weight:500;
+    ">Got it</button>
+  `;
+
+  document.querySelector(".auth-modal").appendChild(confirmMsg);
+
+  document.getElementById("confirm-close-btn").addEventListener("click", () => {
+    // Clean up and close
+    confirmMsg.remove();
+    authForm.style.display = "block";
+    document.querySelector(".auth-footer").style.display = "block";
+    authOverlay.classList.remove("active");
+  });
+    }
       }
 
     } catch (error) {
@@ -475,26 +518,39 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function loadHistoryItem(id) {
-    const { data, error } = await _supabase
-      .from("research_history")
-      .select("query, report")
-      .eq("id", id)
-      .single();
+  const { data, error } = await _supabase
+    .from("research_history")
+    .select("query, report")
+    .eq("id", id)
+    .single();
 
-    if (error || !data) return;
+  if (error || !data) return;
 
-    searchInput.value = data.query;
-    searchWrapper.classList.add("active");
-    statusContainer.classList.remove("active");
+  // Move search bar to top
+  searchWrapper.classList.add("active");
+  // Hide status, clear old results
+  statusContainer.classList.remove("active");
+  resultsContainer.classList.remove("active");
+  resultsContainer.innerHTML = "";
 
+  // Set the query in the search bar
+  searchInput.value = data.query;
+
+  // Small delay so the layout transition completes before content appears
+  setTimeout(() => {
     const markdown = data.report || "Report not found.";
     resultsContainer.innerHTML = marked.parse(markdown);
+    formatReferencesAsTable(resultsContainer);
     resultsContainer.classList.add("active");
 
     resultsContainer.querySelectorAll("a").forEach(a => {
       a.setAttribute("target", "_blank");
       a.setAttribute("rel", "noopener noreferrer");
     });
+
+    // Scroll workspace back to top
+    document.querySelector(".workspace").scrollTop = 0;
+  }, 300);
   }
 
 
@@ -553,6 +609,114 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function escapeHtml(str) {
     return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function formatReferencesAsTable(container) {
+  const headings = container.querySelectorAll("h2, h3");
+  let refHeading = null;
+  headings.forEach(h => {
+    if (h.textContent.trim().toLowerCase() === "references") refHeading = h;
+  });
+  if (!refHeading) return;
+
+  const refContainer = refHeading.nextElementSibling;
+  if (!refContainer) return;
+
+  const rawText = refContainer.innerText || refContainer.textContent;
+  const lines = rawText.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+
+  const table = document.createElement("table");
+  table.style.cssText = `
+    width:100%; border-collapse:collapse; font-size:0.875rem;
+    margin-top:1rem; font-family:var(--font-body);
+  `;
+  table.innerHTML = `
+    <thead>
+      <tr style="background:rgba(139,99,85,0.1);text-align:left;">
+        <th style="padding:0.6rem 0.75rem;color:var(--color-espresso);font-weight:600;width:3%;">#</th>
+        <th style="padding:0.6rem 0.75rem;color:var(--color-espresso);font-weight:600;width:42%;">Title</th>
+        <th style="padding:0.6rem 0.75rem;color:var(--color-espresso);font-weight:600;width:28%;">Authors</th>
+        <th style="padding:0.6rem 0.75rem;color:var(--color-espresso);font-weight:600;width:7%;">Year</th>
+        <th style="padding:0.6rem 0.75rem;color:var(--color-espresso);font-weight:600;width:20%;">Link</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  `;
+
+  const tbody = table.querySelector("tbody");
+
+  lines.forEach(line => {
+    const numMatch = line.match(/^\[(\d+)\]/);
+    if (!numMatch) return;
+
+    const num = numMatch[1];
+
+    // Extract URL
+    const urlMatch = line.match(/https?:\/\/[^\s]+/);
+    const url = urlMatch ? urlMatch[0].replace(/[.,)\]]+$/, "") : null;
+
+    // Extract year
+    const yearMatch = line.match(/\((\d{4})\)/);
+    const year = yearMatch ? yearMatch[1] : "—";
+
+    // ── Key fix: split on "(YEAR). " to separate authors from title ──
+    // Format is always: [N] Authors (Year). Title. URL
+    let authors = "—";
+    let title   = "—";
+
+    const yearSplit = line.match(/^.*?\((\d{4})\)\.\s*/);
+    if (yearSplit) {
+      // Everything before "(Year). " is [N] + authors
+      const beforeTitle = line.slice(0, yearSplit[0].length);
+      // Everything after "(Year). " is title + URL
+      let afterTitle = line.slice(yearSplit[0].length);
+
+      // Remove URL from title
+      afterTitle = afterTitle.replace(/https?:\/\/[^\s]+/, "").trim();
+      afterTitle = afterTitle.replace(/\.$/, "").trim();
+      title = afterTitle || "—";
+
+      // Authors = beforeTitle minus [N] and (Year)
+      authors = beforeTitle
+        .replace(/^\[\d+\]\s*/, "")
+        .replace(/\(\d{4}\)\.?\s*$/, "")
+        .trim();
+      authors = authors.replace(/[,.]$/, "").trim();
+    } else {
+      // Fallback — no year found, dump everything as title
+      title = line
+        .replace(/^\[\d+\]\s*/, "")
+        .replace(/https?:\/\/[^\s]+/, "")
+        .trim();
+    }
+
+    // Shorten long author lists
+    const authorParts = authors.split(",").map(a => a.trim()).filter(Boolean);
+    const displayAuthors = authorParts.length > 4
+      ? authorParts.slice(0, 3).join(", ") + " et al."
+      : authors;
+
+    const row = document.createElement("tr");
+    row.style.borderBottom = "1px solid rgba(201,170,150,0.3)";
+    row.innerHTML = `
+      <td style="padding:0.6rem 0.75rem;color:var(--color-dusty);vertical-align:top;">${num}</td>
+      <td style="padding:0.6rem 0.75rem;color:var(--color-espresso);vertical-align:top;font-weight:500;">${title}</td>
+      <td style="padding:0.6rem 0.75rem;color:var(--color-brown);vertical-align:top;">${displayAuthors}</td>
+      <td style="padding:0.6rem 0.75rem;color:var(--color-dusty);vertical-align:top;">${year}</td>
+      <td style="padding:0.6rem 0.75rem;vertical-align:top;">
+        ${url
+          ? `<a href="${url}" target="_blank" rel="noopener noreferrer"
+               style="color:var(--color-brown);font-size:0.8rem;word-break:break-all;">
+               View Paper ↗
+             </a>`
+          : "—"
+        }
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  if (tbody.children.length > 0) refContainer.replaceWith(table);
   }
 
 });
