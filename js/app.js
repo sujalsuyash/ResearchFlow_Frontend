@@ -224,6 +224,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   historyLoginBtn?.addEventListener("click", () => { setAuthMode(true); openAuth(); });
   authClose?.addEventListener("click", closeAuth);
+  // ── Google Sign In ────────────────────────────────────────────
+  document.getElementById("google-signin-btn")?.addEventListener("click", async () => {
+    await _supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "https://episteme-mu.vercel.app/app.html"
+      }
+    });
+  });
   authOverlay?.addEventListener("click", e => { if (e.target === authOverlay) closeAuth(); });
 
   // ── Toggle Login ↔ Signup ─────────────────────────────────────
@@ -317,10 +326,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadHistory();
 
       } else {
-        // ── SIGN UP ──────────────────────────────────────────────
+      // ── SIGN UP ──────────────────────────────────────────────
         if (!fullName) { showAuthError("Please enter your full name."); return; }
 
-        const { data, error } = await _supabase.auth.signUp({
+  // ── Password validation ──────────────────────────────────
+      if (password.length < 8) {
+          showAuthError("Password must be at least 8 characters."); return;
+      }
+      if (!/[A-Z]/.test(password)) {
+        showAuthError("Password must contain at least one uppercase letter."); return;
+      }
+      if (!/[0-9]/.test(password)) {
+        showAuthError("Password must contain at least one number."); return;
+      }
+
+  // ── Check if email already exists ───────────────────────
+      const { data: existingUser } = await _supabase
+        .from("profiles")
+        .select("email")
+        .eq("email", email)
+        .maybeSingle();
+
+      if (existingUser) {
+        showAuthError("An account with this email already exists. Please log in.");
+        return;
+      }
+
+      const { data, error } = await _supabase.auth.signUp({
           email,
           password,
           options: {
