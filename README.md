@@ -505,10 +505,10 @@ After you get your production URL (e.g. `https://researchflow.vercel.app`), upda
 
 <div align="center">
 
-**Sujal Yadav**
+**Sujal Suyash**
 
 [![GitHub](https://img.shields.io/badge/GitHub-sujalsuyash-181717?style=flat-square&logo=github)](https://github.com/sujalsuyash)
-[![Email](https://img.shields.io/badge/Email-ghostsujal2507%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:yadavsujal2507gmail.com)
+[![Email](https://img.shields.io/badge/Email-yadavsujal2507%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:yadavsujal2507gmail.com)
 
 </div>
 
