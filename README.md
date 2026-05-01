@@ -4,12 +4,6 @@
 
 ### *Turn any research question into a cited academic report — in under 2 minutes.*
 
-[![Status](https://img.shields.io/badge/Status-Live-brightgreen?style=flat-square)](https://researchflow-frontend.vercel.app)
-[![Supabase](https://img.shields.io/badge/Auth-Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)](https://supabase.com)
-[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![Railway](https://img.shields.io/badge/Pipeline-Railway-0B0D0E?style=flat-square&logo=railway&logoColor=white)](https://railway.app)
-[![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com)
-[![Redis](https://img.shields.io/badge/Queue-Redis-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io)
 
 <br/>
 
@@ -514,17 +508,10 @@ After you get your production URL (e.g. `https://researchflow.vercel.app`), upda
 **Sujal Yadav**
 
 [![GitHub](https://img.shields.io/badge/GitHub-sujalsuyash-181717?style=flat-square&logo=github)](https://github.com/sujalsuyash)
-[![Email](https://img.shields.io/badge/Email-ghostsujal2507%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:ghostsujal2507@gmail.com)
+[![Email](https://img.shields.io/badge/Email-ghostsujal2507%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:yadavsujal2507gmail.com)
 
 </div>
 
----
-
-## 📄 License
-
-This project is for personal and educational use. All rights reserved © 2025 Sujal Yadav.
-
----
 
 <div align="center">
 
