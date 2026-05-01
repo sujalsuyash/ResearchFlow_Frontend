@@ -9,7 +9,8 @@
   const phrases = [
     "Spent 6 hours reading papers?",
     "Lost in a sea of citations?",
-    "Let ResearchFlow do it in minutes.",
+    "Let Episteme do it in minutes.",
+    "Because reading 40 papers is a bad use of your afternoon.",
     "Query → Plan → Search → Synthesize → Report."
   ];
 
