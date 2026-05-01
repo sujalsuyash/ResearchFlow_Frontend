@@ -1,13 +1,13 @@
 <div align="center">
 
-# 🔬 ResearchFlow
+# 🔬 Episteme
 
 ### *Turn any research question into a cited academic report — in under 2 minutes.*
 
 
 <br/>
 
-**ResearchFlow** is an autonomous academic research assistant. Ask it any complex question —
+**Episteme** is an autonomous academic research assistant. Ask it any complex question —
 it deconstructs your query, searches **Semantic Scholar**, **arXiv**, **PubMed**, and **OpenAlex** simultaneously,
 filters thousands of papers for relevance, and synthesises a structured, fully-cited report. All in one click.
 
@@ -41,9 +41,9 @@ filters thousands of papers for relevance, and synthesises a structured, fully-c
 
 ## 🔭 Overview
 
-ResearchFlow removes the most painful part of academic research — the hours spent searching databases, skimming abstracts, and stitching together a coherent picture of a field.
+Episteme removes the most painful part of academic research — the hours spent searching databases, skimming abstracts, and stitching together a coherent picture of a field.
 
-You type **one question**. ResearchFlow's AI pipeline handles everything else:
+You type **one question**. Episteme's AI pipeline handles everything else:
 
 | Stage | What happens |
 |---|---|
@@ -62,9 +62,9 @@ The result reads like a researcher spent 6 hours on it. Delivered in under 2 min
 
 ## 🌐 Live Demo
 
-> 🚀 **[researchflow.vercel.app](https://researchflow.vercel.app)** *(update after deployment)*
+> 🚀 **[episteme.vercel.app](https://episteme.vercel.app)** *(update after deployment)*
 
-**Try these queries to see ResearchFlow at its best:**
+**Try these queries to see Episteme at its best:**
 
 ```
 Neuro-symbolic AI in medical diagnosis
@@ -187,7 +187,7 @@ Query
 ## 🗂️ Project Structure
 
 ```
-researchFlow_frontend/
+episteme_frontend/
 │
 ├── 📄 index.html                  # Landing page (hero, pipeline, how-it-works)
 ├── 📄 app.html                    # Workspace (search bar, results, auth modal)
@@ -240,7 +240,7 @@ researchFlow_frontend/
 ### Prerequisites
 
 - A [Supabase](https://supabase.com) project (free tier works)
-- The ResearchFlow backend URL (Railway deployment)
+- The Episteme backend URL (Railway deployment)
 - VS Code + [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) extension
 
 ### Step 1 — Clone
